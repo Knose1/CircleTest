@@ -2,7 +2,7 @@ function calque1Play(lib) {
 
     document.body.style.backgroundColor = "#000000"
 
-    var socket = io.connect(env.process.url);
+    var socket = io.connect(document.URL.split(/\//g).slice(0,3).join("/"));
 
 	socket.on('createSucces', doStartPlaying);
 
