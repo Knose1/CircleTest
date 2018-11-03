@@ -32,7 +32,7 @@ function calque1Play(lib) {
 		/*	Get Events Functions	*/
         function doPlayerLeaved(pData) {
             playerList = pData.playerList;
-            stage.removeChild(playerPointerList[pData.id])
+            stage.removeChild(playerPointerList[pData.id]);
             playerPointerList[pData.id] = undefined;
         }
 
@@ -46,6 +46,9 @@ function calque1Play(lib) {
 		}
 
 		function doObjectMoved(pData) {
+            if (objectId == pData.id)
+                return;
+
             var lMyClientPlayer = playerPointerList[pData.id];
 
             lMyClientPlayer.x = pData.x ;
@@ -54,8 +57,13 @@ function calque1Play(lib) {
 
 		/*	Send Events Functions	*/
 		function doMouseMove(pEvent) {
+            var lMyClientPlayer = playerPointerList[objectId];
+            lMyClientPlayer.x = stage.mouseX;
+            lMyClientPlayer.y = stage.mouseY;
+
 			socket.emit('mouseMove', { mouseX: stage.mouseX  / stage.scaleY, mouseY: stage.mouseY / stage.scaleX });
 		}
+
     }
 
 
