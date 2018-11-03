@@ -1,1 +1,1 @@
-web: node servIndex.js
+web: node serverIndex.js
