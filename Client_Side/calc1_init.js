@@ -58,10 +58,10 @@ function calque1Play(lib) {
 		/*	Send Events Functions	*/
 		function doMouseMove(pEvent) {
             var lMyClientPlayer = playerPointerList[objectId];
-            lMyClientPlayer.x = stage.mouseX;
-            lMyClientPlayer.y = stage.mouseY;
+            lMyClientPlayer.x = stage.mouseX / stage.scaleX;
+            lMyClientPlayer.y = stage.mouseY / stage.scaleY;
 
-			socket.emit('mouseMove', { mouseX: stage.mouseX  / stage.scaleY, mouseY: stage.mouseY / stage.scaleX });
+			socket.emit('mouseMove', { mouseX: stage.mouseX  / stage.scaleX, mouseY: stage.mouseY / stage.scaleY });
 		}
 
     }
