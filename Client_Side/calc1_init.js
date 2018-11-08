@@ -1,5 +1,10 @@
 function calque1Play(lib) {
 
+    const COLOR_LIB = {
+        blue: new createjs.ColorFilter(1,1,1,1, 120, 158, 191, 0),
+        red: new createjs.ColorFilter(1,1,1,1, 255,0, 0, 0),
+    }
+
     document.body.style.backgroundColor = "#000000"
 
     var socket = io.connect(document.URL.split(/\//g).slice(0,3).join("/"));
@@ -13,23 +18,42 @@ function calque1Play(lib) {
 	function doStartPlaying(pData) {
 
         var objectId = pData.id;
+
 		var playerList = pData.playerList;
         var playerPointerList = [];
 
         playerList.forEach(
             function(pData, pIndex) {
-                playerPointerList[pIndex] = createPlayerPointer(pData.x, pData.y)
+
+                var myPlayerPointer = playerPointerList[pIndex] = createPlayerPointer(pData.x, pData.y);
+                myPlayerPointer.filters = ( pData.isRed ? [COLOR_LIB.red] : null);
+                myPlayerPointer.cache(-100,-100,200,200);
             }
         )
 
         socket.on('playerLeaved', doPlayerLeaved);
 		socket.on('playerJoined', doPlayerJoined);
 		socket.on('objectMoved', doObjectMoved);
+
+		socket.on('toutchedRedCircle', updateBlueCircle);
+		socket.on('endInvicibility', updateRedCircle);
 		canvas.addEventListener("mousemove", doMouseMove);
 
         //console.log(stage);
 
 		/*	Get Events Functions	*/
+        function updateBlueCircle(pData) {
+            var myPlayerPointer = playerPointerList[pData.id];
+            myPlayerPointer.filters = ( myPlayerPointer.isRed ? [COLOR_LIB.blue] : null);
+            myPlayerPointer.updateCache();
+        }
+
+        function updateRedCircle(pData) {
+            var myPlayerPointer = playerPointerList[pData.id];
+            myPlayerPointer.filters = ( myPlayerPointer.isRed ? [COLOR_LIB.red] : null);
+            myPlayerPointer.updateCache();
+        }
+
         function doPlayerLeaved(pData) {
             playerList = pData.playerList;
             stage.removeChild(playerPointerList[pData.id]);
@@ -58,10 +82,16 @@ function calque1Play(lib) {
 		/*	Send Events Functions	*/
 		function doMouseMove(pEvent) {
             var lMyClientPlayer = playerPointerList[objectId];
-            lMyClientPlayer.x = stage.mouseX / stage.scaleX;
-            lMyClientPlayer.y = stage.mouseY / stage.scaleY;
+            //console.log(lMyClientPlayer);
+            var lCoordinates = {
+                x: stage.mouseX / stage.scaleX,
+                y: stage.mouseY / stage.scaleY
+            }
 
-			socket.emit('mouseMove', { mouseX: stage.mouseX  / stage.scaleX, mouseY: stage.mouseY / stage.scaleY });
+            lMyClientPlayer.x = lCoordinates.x;
+            lMyClientPlayer.y = lCoordinates.y;
+
+			socket.emit('mouseMove', { mouseX: lCoordinates.x, mouseY: lCoordinates.y });
 		}
 
     }

@@ -8,6 +8,9 @@ app.listen(PORT, () => {
     console.log(`Our app is running on port ${ PORT }`);
 });
 
+const TIMEOUT_TIME = 1000;
+
+
 function handler (req, res) {
 
     //console.log(req.headers.host)
@@ -45,7 +48,11 @@ function handler (req, res) {
 
 /* Socket */
 
-var myClientArray = [];
+let myClientArray = [];
+let redPlayerId = -1;
+let myRedPlayer;
+let isInvicibility = false;
+let timeOutId;
 
 io.on('connection', function (socket) {
     //console.log("connection");
@@ -56,17 +63,35 @@ io.on('connection', function (socket) {
     if ( undefinedIndex != -1)
         clientId = undefinedIndex;
 
-    if (myClientArray.filter(filterClientId).length == 0) {
+    //Check ip
+    if (myClientArray.filter(filterClientIp).length == 0) {
+
 
         //Add the new client in the list
-        myClientArray[clientId] = { ip: clientIp, socketId: socket.id, x: 0, y: 0};
+        myClientArray[clientId] = { ip: clientIp, socketId: socket.id, x: 0, y: 0, isRed: false};
 
+        //Welcome, you are the new red player
+        if(myClientArray.filter(filterDefined).length == 1) {
+            redPlayerId = clientId;
+            myClientArray.filter(filterDefined);
+            myRedPlayer = myClientArray[redPlayerId];
+
+            myClientArray[redPlayerId].isRed = true;
+
+            //Emit event
+            io.emit('endInvicibility', {
+                id: redPlayerId,
+                playerList: myClientArray.map(mapPlayerList)
+            });
+        }
 
         //Send callback
         socket.emit('createSucces', {
             id: clientId,
             playerList: myClientArray.map(mapPlayerList)
         });
+
+        //Broadcast playerJoined
         io.emit("playerJoined", {
             id: clientId,
             playerList: myClientArray.map(mapPlayerList)
@@ -79,25 +104,70 @@ io.on('connection', function (socket) {
 
     //MouseMove
     socket.on('mouseMove', function(pData) {
-        myClientArray[clientId].x = pData.mouseX;
-        myClientArray[clientId].y = pData.mouseY;
+        var myClient = myClientArray[clientId];
+        myClient.x = pData.mouseX;
+        myClient.y = pData.mouseY;
 
         io.emit('objectMoved', {id:clientId, x: pData.mouseX, y: pData.mouseY});
-        //clientInspect();
+
+
+        //The redPlayer is hit by an enemy
+        if (!isInvicibility) {
+
+            if (checkDistance(myClient, myRedPlayer) && !myClient.isRed) {
+                executeCollision(myClient)
+            } else if (myClient.isRed) {
+
+                let lI = myClientArray.length;
+                let myWhileClient;
+                while (lI-- > 0) {
+                    myWhileClient = myClientArray[lI];
+                    if (myWhileClient === myRedPlayer || myClient === undefined)
+                        continue;
+
+                    if(checkDistance(myWhileClient, myRedPlayer)) {
+                        executeCollision(myWhileClient);
+                        break;
+                    }
+                }
+            }
+        }
     });
 
     //Disconnect
     socket.on('disconnect', function () {
         //console.log("disconnect");
 
+        //Asign new red player
+        let myFilteredArray = myClientArray.filter(filterClientIp);
+        if(clientId === redPlayerId && myFilteredArray.length != 0) {
+
+
+            if (myFilteredArray.length == 1) {
+                redPlayerId = -1;
+                myRedPlayer = undefined;
+
+            } else {
+                myRedPlayer = myFilteredArray[Math.floor( Math.random() * myFilteredArray.length)];
+                redPlayerId = myClientArray.indexOf(myRedPlayer);
+
+                io.emit('endInvicibility', {id: redPlayerId, playerList: myClientArray});
+
+                //No timeout to avoid bug
+            }
+        }
+
+        //Broadcast playerLeaved
         io.emit("playerLeaved", {
             id: clientId,
             playerList: myClientArray.map(mapPlayerList)
         });
 
+        //Remove from clientList
         let lMyIndex = myClientArray.indexOf(
             myClientArray.filter(filterDisconnectedSocket )[0]
-        )
+        );
+
         if (lMyIndex != -1)
             myClientArray[lMyIndex] = undefined;
 
@@ -109,7 +179,7 @@ io.on('connection', function (socket) {
     });
 
     ////////////////////////////////
-    function filterClientId(pData) {
+    function filterClientIp(pData) {
         return pData ?
             pData.ip == clientIp :
             false;
@@ -121,30 +191,71 @@ io.on('connection', function (socket) {
             pData.socketId == socket.id :
             false;
     }
+
+    ///////////////////////////////////////
+    function executeCollision(pClient) {
+
+        if (timeOutId == undefined) {
+
+            redPlayerId = myClientArray.indexOf(pClient);
+            myRedPlayer = pClient;
+            isInvicibility = true
+
+            io.emit('toutchedRedCircle', {id: redPlayerId, playerList: myClientArray});
+
+
+            timeOutId = setTimeout(function () {
+
+                io.emit('endInvicibility', {id: redPlayerId, playerList: myClientArray});
+
+                clearTimeOut(timeOutId);
+                timeOutId = undefined;
+                isInvicibility = false;
+            }, TIMEOUT_TIME);
+        }
+    }
 });
 
-/**/
+
+
+
 function clientInspect() {
     console.log(util.inspect(myClientArray, { depth: null }));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+function filterDefined(pData) {
+    return pData !== undefined;
+}
+///////////////////////////////////////////////////////////////////////////////
 function mapPlayerList(pData) {
     return pData ?
-        {x: pData.x, y: pData.y}:
+        {
+            x: pData.x,
+            y: pData.y,
+            isRed: pData.isRed
+        }:
         undefined;
 }
 ///////////////////////////////////////////////////////////////////////////////
-function htmlRenderFile(lRes, lUrl, lErrorMessage = "Error loading the page") {
-    fs.readFile(lUrl,
+function htmlRenderFile(pRes, pUrl, pErrorMessage = "Error loading the page") {
+    fs.readFile(pUrl,
     function (err, data) {
         if (err) {
-            console.log( new Error(`can't render ${lUrl}`) );
-            lRes.writeHead(404);
-            return lRes.end(lErrorMessage);
+            console.log( new Error(`can't render ${pUrl}`) );
+            pRes.writeHead(404);
+            return pRes.end(pErrorMessage);
         }
 
-        lRes.writeHead(200);
-        lRes.end(data);
+        pRes.writeHead(200);
+        pRes.end(data);
     });
+}
+
+///////////////////////////////////////////////////////////////////////////////
+function checkDistance(pPoint1, pPoint2, pMinDistance) {
+    var pow = Math.pow;
+    var lDistance = Math.sqrt( pow(pPoint2.x - pPoint1.x, 2) + pow(pPoint2.y - pPoint1.y, 2) );
+
+    return pMinDistance >= lDistance;
 }

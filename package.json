@@ -7,6 +7,8 @@
     "start": "node serverIndex.js"
   },
   "dependencies": {
+    "createjs": "^1.0.1",
+    "easeljs": "^1.0.2",
     "fs": "0.0.1-security",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1"
