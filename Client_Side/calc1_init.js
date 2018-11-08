@@ -17,6 +17,7 @@ function calque1Play(lib) {
 	*/
 	function doStartPlaying(pData) {
 
+        var redObjectId = -1:
         var objectId = pData.id;
 
 		var playerList = pData.playerList;
@@ -24,6 +25,9 @@ function calque1Play(lib) {
 
         playerList.forEach(
             function(pData, pIndex) {
+
+                if (pData.isRed)
+                    redObjectId = pIndex;
 
                 var myPlayerPointer = playerPointerList[pIndex] = createPlayerPointer(pData.x, pData.y);
                 myPlayerPointer.filters = ( pData.isRed ? [COLOR_LIB.red] : null);
@@ -43,20 +47,32 @@ function calque1Play(lib) {
 
 		/*	Get Events Functions	*/
         function updateBlueCircle(pData) {
-            var myPlayerPointer = playerPointerList[pData.id];
-            myPlayerPointer.filters = ( myPlayerPointer.isRed ? [COLOR_LIB.blue] : null);
-            myPlayerPointer.updateCache();
+            upMyCircle(COLOR_LIB.blue, pData);
         }
 
         function updateRedCircle(pData) {
+            upMyCircle(COLOR_LIB.red, pData);
+        }
+
+        function upMyCircle(pColor, pData) {
+            //Remove old red cache
+            playerPointerList[redObjectId].uncache();
+
+            //Set new red cache
             var myPlayerPointer = playerPointerList[pData.id];
-            myPlayerPointer.filters = ( myPlayerPointer.isRed ? [COLOR_LIB.red] : null);
-            myPlayerPointer.updateCache();
+            myPlayerPointer.filters = [pColor];
+            myPlayerPointer.uncache();
+            myPlayerPointer.cache(-100,-100,200,200);
+
+            redObjectId = pData.id;
         }
 
         function doPlayerLeaved(pData) {
             playerList = pData.playerList;
-            stage.removeChild(playerPointerList[pData.id]);
+            var myPlayerPointer = playerPointerList[pData.id];
+            myPlayerPointer.uncache();
+            stage.removeChild(myPlayerPointer);
+
             playerPointerList[pData.id] = undefined;
         }
 
