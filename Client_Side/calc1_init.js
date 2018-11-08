@@ -17,7 +17,7 @@ function calque1Play(lib) {
 	*/
 	function doStartPlaying(pData) {
 
-        var redObjectId = -1:
+        var redObjectId = -1;
         var objectId = pData.id;
 
 		var playerList = pData.playerList;
