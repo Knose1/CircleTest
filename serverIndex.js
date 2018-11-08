@@ -209,7 +209,7 @@ io.on('connection', function (socket) {
 
                 io.emit('endInvicibility', {id: redPlayerId, playerList: myClientArray});
 
-                clearTimeOut(timeOutId);
+                clearTimeout(timeOutId);
                 timeOutId = undefined;
                 isInvicibility = false;
             }, TIMEOUT_TIME);
