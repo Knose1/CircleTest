@@ -114,7 +114,7 @@ io.on('connection', function (socket) {
         //The redPlayer is hit by an enemy
         if (!isInvicibility) {
 
-            if (checkDistance(myClient, myRedPlayer) && !myClient.isRed) {
+            if (checkDistance(myClient, myRedPlayer, 20) && !myClient.isRed) {
                 executeCollision(myClient)
             } else if (myClient.isRed) {
 
@@ -125,7 +125,7 @@ io.on('connection', function (socket) {
                     if (myWhileClient === myRedPlayer || myClient === undefined)
                         continue;
 
-                    if(checkDistance(myWhileClient, myRedPlayer)) {
+                    if(checkDistance(myWhileClient, myRedPlayer, 20)) {
                         executeCollision(myWhileClient);
                         break;
                     }
