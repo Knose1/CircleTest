@@ -140,8 +140,9 @@ io.on('connection', function (socket) {
 
         //Asign new red player
         let myFilteredArray = myClientArray.filter(filterClientIp);
-        if(clientId === redPlayerId && myFilteredArray.length != 0) {
+        if(clientId === redPlayerId) {
 
+            let myDefinedFilteredArray = myClientArray.filter(filterDefined);
 
             if (myFilteredArray.length == 1) {
                 redPlayerId = -1;

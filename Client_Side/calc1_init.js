@@ -47,10 +47,12 @@ function calque1Play(lib) {
 
 		/*	Get Events Functions	*/
         function updateBlueCircle(pData) {
+            console.log('toutchedRedCircle')
             upMyCircle(COLOR_LIB.blue, pData);
         }
 
         function updateRedCircle(pData) {
+            console.log('endInvicibility')
             upMyCircle(COLOR_LIB.red, pData);
         }
 
