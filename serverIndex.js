@@ -107,6 +107,16 @@ io.on('connection', function (socket) {
         var myClient = myClientArray[clientId];
         myClient.mouseX = pData.mouseX;
         myClient.mouseY = pData.mouseY;
+
+        var myMove = movePlayer(myClient, pData);
+
+        if (myMove === undefined)
+            return;
+
+        myClient.x += myMove.x;
+        myClient.y += myMove.y;
+
+        io.emit('objectMoved', {id:clientId, x: myClient.x, y: myClient.x});
     });
 
     //Disconnect
@@ -209,6 +219,17 @@ function gameLoop() {
         if (lMyClientPlayer === undefined || lMyClientPlayer.mouseX === undefined || lMyClientPlayer.mouseY === undefined)
             continue;
 
+        //The redPlayer is hit by an enemy
+        if (!isInvicibility) {
+            if (lMyClientPlayer === myRedPlayer || lMyClientPlayer === undefined)
+                continue;
+
+            if(checkDistance(lMyClientPlayer, myRedPlayer, 50)) {
+                executeCollision(lMyClientPlayer);
+                break;
+            }
+        }
+
         myMove = movePlayer(lMyClientPlayer, lMyClientPlayer);
 
         //if (myMove.x.toString() == "NaN" || myMove.y.toString() == "NaN")
@@ -221,16 +242,7 @@ function gameLoop() {
         lMyClientPlayer.x += myMove.x;
         lMyClientPlayer.y += myMove.y;
 
-        //The redPlayer is hit by an enemy
-        /*if (!isInvicibility) {
-            if (lMyClientPlayer === myRedPlayer || lMyClientPlayer === undefined)
-                continue;
 
-            if(checkDistance(lMyClientPlayer, myRedPlayer, 50)) {
-                executeCollision(lMyClientPlayer);
-                break;
-            }
-        }*/
 
         io.emit('objectMoved', {id:lobjectId, x: lMyClientPlayer.x, y: lMyClientPlayer.x});
     }
