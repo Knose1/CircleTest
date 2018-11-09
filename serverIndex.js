@@ -159,7 +159,7 @@ io.on('connection', function (socket) {
         let myFilteredArray = myClientArray.filter(filterDefined);
         if(clientId === redPlayerId) {
 
-            if (myFilteredArray.length == 1) {
+            if (myFilteredArray.length == 0) {
                 redPlayerId = -1;
                 myRedPlayer = undefined;
 
