@@ -234,7 +234,7 @@ function gameLoop() {
 
         myMove = movePlayer(lMyClientPlayer, lMyClientPlayer);
 
-        if (myMove.x.toString() =="NaN")
+        if (myMove.x.toString() =="NaN" || myMove.y.toString() =="NaN")
             console.log(util.inspect(myMove, { depth: null }));
         //console.log(util.inspect(lMyClientPlayer, { depth: null }));
 
