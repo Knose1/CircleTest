@@ -229,13 +229,14 @@ function gameLoop() {
     while (lobjectId-- > 0) {
         lMyClientPlayer = myClientArray[lobjectId];
 
-        if (lMyClientPlayer === undefined)
+        if (lMyClientPlayer === undefined || lMyClientPlayer.mouseX === undefined || lMyClientPlayer.mouseY === undefined)
             continue;
 
         myMove = movePlayer(lMyClientPlayer, lMyClientPlayer);
 
-        console.log(util.inspect(myMove, { depth: null }));
-        console.log(util.inspect(lMyClientPlayer, { depth: null }));
+        if (myMove.x.toString() =="NaN")
+            console.log(util.inspect(myMove, { depth: null }));
+        //console.log(util.inspect(lMyClientPlayer, { depth: null }));
 
         if (myMove === undefined || ( Math.abs(myMove.x) < 0.01 && Math.abs(myMove.y) < 0.01))
             continue;
