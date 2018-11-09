@@ -138,25 +138,8 @@ io.on('connection', function (socket) {
     socket.on('disconnect', function () {
         //console.log("disconnect");
 
-        //Asign new red player
-        let myFilteredArray = myClientArray.filter(filterClientIp);
-        if(clientId === redPlayerId) {
 
-            let myDefinedFilteredArray = myClientArray.filter(filterDefined);
 
-            if (myFilteredArray.length == 1) {
-                redPlayerId = -1;
-                myRedPlayer = undefined;
-
-            } else {
-                myRedPlayer = myFilteredArray[Math.floor( Math.random() * myFilteredArray.length)];
-                redPlayerId = myClientArray.indexOf(myRedPlayer);
-
-                io.emit('endInvicibility', {id: redPlayerId, playerList: myClientArray});
-
-                //No timeout to avoid bug
-            }
-        }
 
         //Broadcast playerLeaved
         io.emit("playerLeaved", {
@@ -172,6 +155,23 @@ io.on('connection', function (socket) {
         if (lMyIndex != -1)
             myClientArray[lMyIndex] = undefined;
 
+        //Asign new red player
+        let myFilteredArray = myClientArray.filter(filterDefined);
+        if(clientId === redPlayerId) {
+
+            if (myFilteredArray.length == 1) {
+                redPlayerId = -1;
+                myRedPlayer = undefined;
+
+            } else {
+                myRedPlayer = myFilteredArray[Math.floor( Math.random() * myFilteredArray.length)];
+                redPlayerId = myClientArray.indexOf(myRedPlayer);
+
+                io.emit('endInvicibility', {id: redPlayerId, playerList: myClientArray});
+
+                //No timeout to avoid bug
+            }
+        }
 
         clientInspect();
 
@@ -196,17 +196,17 @@ io.on('connection', function (socket) {
     ///////////////////////////////////////
     function executeCollision(pClient) {
 
-        if (timeOutId == undefined) {
+        if (timeOutId === undefined) {
 
             redPlayerId = myClientArray.indexOf(pClient);
             myRedPlayer = pClient;
-            isInvicibility = true
+            isInvicibility = true;
 
             io.emit('toutchedRedCircle', {id: redPlayerId, playerList: myClientArray});
 
 
             timeOutId = setTimeout(function () {
-
+                console.log("hello");
                 io.emit('endInvicibility', {id: redPlayerId, playerList: myClientArray});
 
                 clearTimeout(timeOutId);
