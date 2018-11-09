@@ -231,14 +231,16 @@ function gameLoop() {
 
         if (!lMyClientPlayer)
             continue;
-            
+
         myMove = movePlayer(lMyClientPlayer, lMyClientPlayer);
+
+        if (myMove === undefined || ( Math.abs(myMove.x) < 0.01 && Math.abs(myMove.y) < 0.01))
+            continue;
 
         lMyClientPlayer.x += myMove.x;
         lMyClientPlayer.y += myMove.y;
 
-        if ( Math.abs(myMove.x) < 0.01 && Math.abs(myMove.y) < 0.01)
-            continue;
+
 
         io.emit('objectMoved', {id:lobjectId, x: lMyClientPlayer.x, y: lMyClientPlayer.x});
     }
