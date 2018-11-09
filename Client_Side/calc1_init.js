@@ -107,13 +107,17 @@ function calque1Play(lib) {
                 x: stage.mouseX / stage.scaleX,
                 y: stage.mouseY / stage.scaleY
             }
-
+	
             lMyClientPlayer.x = lCoordinates.x;
             lMyClientPlayer.y = lCoordinates.y;
-
+	
 			socket.emit('mouseMove', { mouseX: lCoordinates.x, mouseY: lCoordinates.y });
-		}
-
+	}
+	socket.on('disconnect', disconnectSocket);
+    	socket.on('connect_error', disconnectSocket);
+    	function disconnectSocket() {
+            socket.close();
+    	}
     }
 
 
