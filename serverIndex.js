@@ -104,17 +104,14 @@ io.on('connection', function (socket) {
     //MouseMove
     socket.on('mouseMove', function(pData) {
         var myClient = myClientArray[clientId];
-        myClient.x = pData.mouseX;
-        myClient.y = pData.mouseY;
-
-        io.emit('objectMoved', {id:clientId, x: pData.mouseX, y: pData.mouseY});
-
+        myClient.mouseX = pData.mouseX;
+        myClient.mouseY = pData.mouseY;
 
         //The redPlayer is hit by an enemy
         if (!isInvicibility) {
 
             //console.log(myClient);
-            if (checkDistance(myClient, myRedPlayer, 20) && !myClient.isRed) {
+            if (checkDistance(myClient, myRedPlayer, 50) && !myClient.isRed) {
                 executeCollision(myClient)
             } else if (myClient.isRed) {
 
@@ -125,7 +122,7 @@ io.on('connection', function (socket) {
                     if (myWhileClient === myRedPlayer || myWhileClient === undefined)
                         continue;
 
-                    if(checkDistance(myWhileClient, myRedPlayer, 20)) {
+                    if(checkDistance(myWhileClient, myRedPlayer, 50)) {
                         executeCollision(myWhileClient);
                         break;
                     }
@@ -220,12 +217,49 @@ io.on('connection', function (socket) {
 });
 
 
+setInterval(gameLoop, 1); //0.008s
 
+var myMove = {x:0, y:0};
+const pow = Math.pow;
+function gameLoop() {
+    var lobjectId = myClientArray.length;
 
+    let lMyClientPlayer;
+    while (lobjectId-- > 0) {
+        lMyClientPlayer = myClientArray[lobjectId];
+
+        myMove = movePlayer(lMyClientPlayer, lMyClientPlayer);
+
+        lMyClientPlayer.x += myMove.x;
+        lMyClientPlayer.y += myMove.y;
+
+        if ( Math.abs(myMove.x) < 0.01 && Math.abs(myMove.y) < 0.01)
+            return;
+
+        io.emit('objectMoved', {id:lobjectId, x: lMyClientPlayer.x, y: lMyClientPlayer.x});
+    }
+}
+///////////////////////////////////////////////////////////////////////////////
+function movePlayer(pPoint1, pMouseData) {
+    var lMyVector = {
+        x: pMouseData.mouseX - pPoint1.x,
+        y: pMouseData.mouseY - pPoint1.y
+     };
+    var lDistance = Math.sqrt( pow(lMyVector.y, 2) + pow(lMyVector.x, 2) );
+
+    if (lDistance == 0)
+        return;
+
+    var lRotation = Math.atan2(lMyVector.y / lDistance, lMyVector.x / lDistance);
+    // ↑ In radius
+    //console.log(lMyVector, lDistance, lRotation);
+
+    return {x: Math.cos(lRotation) * lDistance / 50, y: Math.sin(lRotation) * lDistance / 50};
+}
+///////////////////////////////////////////////////////////////////////////////
 function clientInspect() {
     console.log(util.inspect(myClientArray, { depth: null }));
 }
-
 ///////////////////////////////////////////////////////////////////////////////
 function filterDefined(pData) {
     return pData !== undefined;
@@ -254,10 +288,9 @@ function htmlRenderFile(pRes, pUrl, pErrorMessage = "Error loading the page") {
         pRes.end(data);
     });
 }
-
 ///////////////////////////////////////////////////////////////////////////////
 function checkDistance(pPoint1, pPoint2, pMinDistance) {
-    var pow = Math.pow;
+
     var lDistance = Math.sqrt( pow(pPoint2.x - pPoint1.x, 2) + pow(pPoint2.y - pPoint1.y, 2) );
 
     return pMinDistance >= lDistance;

@@ -14,8 +14,13 @@ function calque1Play(lib) {
 	/*
 		We can't play before recieving an id
 		This function handle this async condition
-	*/
+
+    */
+
+
 	function doStartPlaying(pData) {
+
+        var myMove = {x: 0, y: 0};
 
         var redObjectId = -1;
         var objectId = pData.id;
@@ -108,11 +113,39 @@ function calque1Play(lib) {
                 y: stage.mouseY / stage.scaleY
             }
 
-            lMyClientPlayer.x = lCoordinates.x;
-            lMyClientPlayer.y = lCoordinates.y;
+            myMove = movePlayer(lMyClientPlayer, lCoordinates);
+
+            if (myMove === undefined)
+                return;
+
+            lMyClientPlayer.x += myMove.x;
+            lMyClientPlayer.y += myMove.y;
+
+            //console.log(myMove);
 
 			socket.emit('mouseMove', { mouseX: lCoordinates.x, mouseY: lCoordinates.y });
 		}
+
+        setInterval(gameLoop, 1); //0.008s
+
+        function gameLoop() {
+            var lMyClientPlayer = playerPointerList[objectId];
+            var lCoordinates = {
+                x: stage.mouseX / stage.scaleX,
+                y: stage.mouseY / stage.scaleY
+            }
+
+            if (myMove === undefined)
+                return;
+
+            if ( Math.abs(myMove.x) < 0.01 && Math.abs(myMove.y) < 0.01)
+                return;
+
+            myMove = movePlayer(lMyClientPlayer, lCoordinates);
+
+            lMyClientPlayer.x += myMove.x;
+            lMyClientPlayer.y += myMove.y;
+        }
 
     }
 
@@ -127,4 +160,24 @@ function calque1Play(lib) {
 		stage.addChild(myPlayerPointer);
         return myPlayerPointer;
 	}
+
+    ////////////////////////////////////////////////////////
+    let pow = Math.pow;
+
+    function movePlayer(pPoint1, pMouseData) {
+        var lMyVector = {
+            x: pMouseData.x - pPoint1.x,
+            y: pMouseData.y - pPoint1.y
+         };
+        var lDistance = Math.sqrt( pow(lMyVector.y, 2) + pow(lMyVector.x, 2) );
+
+        if (lDistance == 0)
+            return;
+
+        var lRotation = Math.atan2(lMyVector.y / lDistance, lMyVector.x / lDistance);
+        // ↑ In radius
+        //console.log(lMyVector, lDistance, lRotation);
+
+        return {x: Math.cos(lRotation) * lDistance / 50, y: Math.sin(lRotation) * lDistance / 50};
+    }
 }
