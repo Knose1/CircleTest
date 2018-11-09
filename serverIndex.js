@@ -229,13 +229,16 @@ function gameLoop() {
     while (lobjectId-- > 0) {
         lMyClientPlayer = myClientArray[lobjectId];
 
+        if (!lMyClientPlayer)
+            continue;
+            
         myMove = movePlayer(lMyClientPlayer, lMyClientPlayer);
 
         lMyClientPlayer.x += myMove.x;
         lMyClientPlayer.y += myMove.y;
 
         if ( Math.abs(myMove.x) < 0.01 && Math.abs(myMove.y) < 0.01)
-            return;
+            continue;
 
         io.emit('objectMoved', {id:lobjectId, x: lMyClientPlayer.x, y: lMyClientPlayer.x});
     }
