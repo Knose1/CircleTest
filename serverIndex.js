@@ -166,7 +166,8 @@ io.on('connection', function (socket) {
             } else {
                 myRedPlayer = myFilteredArray[Math.floor( Math.random() * myFilteredArray.length)];
                 redPlayerId = myClientArray.indexOf(myRedPlayer);
-
+                myRedPlayer.isRed = true;
+                
                 io.emit('endInvicibility', {id: redPlayerId, playerList: myClientArray});
 
                 //No timeout to avoid bug
