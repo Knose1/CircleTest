@@ -113,7 +113,7 @@ io.on('connection', function (socket) {
         //The redPlayer is hit by an enemy
         if (!isInvicibility) {
 
-            console.log(myClient);
+            //console.log(myClient);
             if (checkDistance(myClient, myRedPlayer, 20) && !myClient.isRed) {
                 executeCollision(myClient)
             } else if (myClient.isRed) {
