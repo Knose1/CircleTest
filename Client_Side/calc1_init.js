@@ -25,6 +25,8 @@ function calque1Play(lib) {
 
         playerList.forEach(
             function(pData, pIndex) {
+                if (!pData)
+                    return
 
                 if (pData.isRed)
                     redObjectId = pIndex;
