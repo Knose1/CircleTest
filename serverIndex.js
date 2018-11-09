@@ -200,6 +200,7 @@ io.on('connection', function (socket) {
 
             redPlayerId = myClientArray.indexOf(pClient);
             myRedPlayer = pClient;
+            myRedPlayer.isRed = true;
             isInvicibility = true;
 
             io.emit('toutchedRedCircle', {id: redPlayerId, playerList: myClientArray});
