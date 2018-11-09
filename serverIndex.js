@@ -55,6 +55,7 @@ let isInvicibility = false;
 let timeOutId;
 
 io.on('connection', function (socket) {
+
     //console.log("connection");
     var clientIp = socket.request.connection.remoteAddress;
     var clientId = myClientArray.length;

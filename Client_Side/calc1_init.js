@@ -149,7 +149,11 @@ function calque1Play(lib) {
 
     }
 
-
+    socket.on('disconnect', disconnectSocket);
+    socket.on('connect_error', disconnectSocket);
+    function disconnectSocket() {
+            socket.close();
+    }
 
     ////////////////////////////////////////////////////////
     function createPlayerPointer(pX,pY) {
