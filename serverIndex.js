@@ -73,7 +73,6 @@ io.on('connection', function (socket) {
         //Welcome, you are the new red player
         if(myClientArray.filter(filterDefined).length == 1) {
             redPlayerId = clientId;
-            myClientArray.filter(filterDefined);
             myRedPlayer = myClientArray[redPlayerId];
 
             myClientArray[redPlayerId].isRed = true;
@@ -114,15 +113,16 @@ io.on('connection', function (socket) {
         //The redPlayer is hit by an enemy
         if (!isInvicibility) {
 
+            console.log(myClient);
             if (checkDistance(myClient, myRedPlayer, 20) && !myClient.isRed) {
                 executeCollision(myClient)
             } else if (myClient.isRed) {
 
-                let lI = myClientArray.length;
-                let myWhileClient;
+                var lI = myClientArray.length;
+                var myWhileClient;
                 while (lI-- > 0) {
                     myWhileClient = myClientArray[lI];
-                    if (myWhileClient === myRedPlayer || myClient === undefined)
+                    if (myWhileClient === myRedPlayer || myWhileClient === undefined)
                         continue;
 
                     if(checkDistance(myWhileClient, myRedPlayer, 20)) {
@@ -167,7 +167,7 @@ io.on('connection', function (socket) {
                 myRedPlayer = myFilteredArray[Math.floor( Math.random() * myFilteredArray.length)];
                 redPlayerId = myClientArray.indexOf(myRedPlayer);
                 myRedPlayer.isRed = true;
-                
+
                 io.emit('endInvicibility', {id: redPlayerId, playerList: myClientArray});
 
                 //No timeout to avoid bug
