@@ -208,7 +208,7 @@ io.on('connection', function (socket) {
 
 
             timeOutId = setTimeout(function () {
-                console.log("hello");
+                //console.log("hello");
                 io.emit('endInvicibility', {id: redPlayerId, playerList: myClientArray});
 
                 clearTimeout(timeOutId);
