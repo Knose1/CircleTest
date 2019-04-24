@@ -4,6 +4,7 @@
   "description": "Test an online game",
   "main": "index.js",
   "scripts": {
+    "test" : "node serverIndex.js",
     "start": "node serverIndex.js"
   },
   "dependencies": {
