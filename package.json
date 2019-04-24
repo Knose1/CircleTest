@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository":"https://github.com/Knose1/CircleTest",
   "scripts": {
-    "test" : "node test.js",
+    "test" : "npm start",
     "start": "node serverIndex.js"
   },
   "dependencies": {
