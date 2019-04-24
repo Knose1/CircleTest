@@ -6,7 +6,7 @@ var fs = require('fs');
 const PORT = process.env.PORT || 18000;
 app.listen(PORT, (function () {
     console.log('Opened server on', app.address());
-    console.log(`Our app is running on port ${ PORT }`);
+    console.log('Our app is running on port' + PORT);
 }));
 
 const TIMEOUT_TIME = 1000;
@@ -27,19 +27,19 @@ function handler (req, res) {
     //Handle URL
     switch (slicedUrl) {
         case '/' :
-            htmlRenderFile(res, __dirname + `/Client_Side/mcSymbole_1.html`, 'Error loading index.html');
+            htmlRenderFile(res, __dirname + '/Client_Side/mcSymbole_1.html', 'Error loading index.html');
             break;
 
         case '/calc1_init.js'  :
         case '/mcSymbole_1.js' :
-            htmlRenderFile(res, __dirname + `/Client_Side${slicedUrl}`, `Error loading ${req.url}`);
+            htmlRenderFile(res, __dirname + '/Client_Side'+slicedUrl, 'Error loading '+req.url);
             break;
 
         default :
             if (slicedUrl.indexOf('/images/') == 0)
-                htmlRenderFile(res, __dirname + `/Client_Side${slicedUrl}`, `Error loading ${req.url}`);
+                htmlRenderFile(res, __dirname + '/Client_Side'+slicedUrl, 'Error loading '+req.url);
             else {
-                htmlRenderFile(res, __dirname + slicedUrl, `Error loading ${req.url}`);
+                htmlRenderFile(res, __dirname + slicedUrl, 'Error loading '+req.url');
             }
             //break;
     }
