@@ -3,8 +3,9 @@ var app = require('http').createServer(handler);
 var io = require('socket.io')(app);
 var fs = require('fs');
 
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 18000;
 app.listen(PORT, () => {
+    console.log('Opened server on', app.address());
     console.log(`Our app is running on port ${ PORT }`);
 });
 
