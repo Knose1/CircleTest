@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Test an online game",
   "main": "index.js",
+  "repository":"https://github.com/Knose1/CircleTest",
   "scripts": {
     "test" : "node serverIndex.js",
     "start": "node serverIndex.js"
