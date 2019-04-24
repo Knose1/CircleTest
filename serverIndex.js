@@ -4,10 +4,10 @@ var io = require('socket.io')(app);
 var fs = require('fs');
 
 const PORT = process.env.PORT || 18000;
-app.listen(PORT, () => {
+app.listen(PORT, (function () {
     console.log('Opened server on', app.address());
     console.log(`Our app is running on port ${ PORT }`);
-});
+}));
 
 const TIMEOUT_TIME = 1000;
 
