@@ -1,1 +1,4 @@
+os: windows
 language: node_js
+
+after_deploy: npm start 
