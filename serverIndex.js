@@ -39,7 +39,7 @@ function handler (req, res) {
             if (slicedUrl.indexOf('/images/') == 0)
                 htmlRenderFile(res, __dirname + '/Client_Side'+slicedUrl, 'Error loading '+req.url);
             else {
-                htmlRenderFile(res, __dirname + slicedUrl, 'Error loading '+req.url');
+                htmlRenderFile(res, __dirname + slicedUrl, 'Error loading '+req.url);
             }
             //break;
     }
